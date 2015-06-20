@@ -12,9 +12,9 @@ automatically adapt callbacks whether they are node style or promise returning
 
 # usage
 
-### unpromisify(userCallback, ctx, args, done)
-### unpromisify(userCallback, args, done);
-### unpromisify(userCallback, done);
+**unpromisify(userCallback, ctx, args, done);**  
+**unpromisify(userCallback, args, done);**  
+**unpromisify(userCallback, done);**  
 
   * `userCallback`: a user supplied callback that performs some async task.  It may call a node style callback, 
         or return a promise.
