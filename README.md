@@ -38,3 +38,14 @@ automatically adapt callbacks whether they are node style or promise returning
     be resolved once, and that your `then` handlers will only be called once. This prevents a common bug in node 
     style callbacks where someone else's bad code might try to call your callback twice.
     `unpromisify` provides the same "only resolve once" guarantee, regardless which method your user chooses.
+
+# releasing
+  
+Use the [cut-release](https://www.npmjs.com/package/cut-release) cli utility.
+   
+  1. `npm install -g cut-release`
+  
+  2. `cut-release`
+  
+  3. follow the prompts
+  
