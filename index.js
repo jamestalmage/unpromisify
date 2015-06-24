@@ -1,6 +1,4 @@
-module.exports = callCallback;
-
-var assert = require('assert');
+(function(){
 var slice = Array.prototype.slice;
 
 var schedule = setTimeout;
@@ -9,7 +7,7 @@ if (typeof setImmediate === 'function') {
   schedule = setImmediate;
 }
 
-if (process && ('function' === typeof process.nextTick)) {
+if (('undefined' !== typeof process) && process && ('function' === typeof process.nextTick)) {
   schedule = process.nextTick;
 }
 
@@ -34,10 +32,14 @@ function callCallback(userCallback, ctx, args, done) {
     ctx = null;
   }
   else {
-    assert.equal(arguments.length, 4, 'incorrect number of arguments');
+    if (arguments.length !== 4) {
+      throw new Error('incorrect number of arguments: ' + arguments.length)
+    }
     args = args ? slice.call(args) : [];
   }
-  assert.equal(typeof done, 'function', 'bad type for done or opts.done');
+  if ('function' !== typeof done) {
+    throw new Error('done must be of type function, got: ' + typeof done);
+  }
 
   var called = false;
   function handleCallback(err, result) {
@@ -67,8 +69,26 @@ function callCallback(userCallback, ctx, args, done) {
 }
 
 callCallback.setScheduler = function setScheduler(newScheduler) {
-  assert.equal(typeof newScheduler, 'function', 'illegal argument: newScheduler');
+  if ('function' !== typeof newScheduler) {
+    throw new Error('newScheduler must be of type function, got: ' + typeof newScheduler);
+  }
   var oldScheduler = schedule;
   schedule = newScheduler;
   return oldScheduler;
 };
+
+  /* istanbul ignore next */
+  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = callCallback;
+  }
+  else {
+    if (typeof define === 'function' && define.amd) {
+      define([], function() {
+        return callCallback;
+      });
+    }
+    else {
+      window.unpromisify = callCallback;
+    }
+  }
+})();

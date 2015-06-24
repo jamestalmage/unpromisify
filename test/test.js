@@ -1,10 +1,13 @@
-describe('unpromisify', function () {
+if ('function' === typeof require) {
   var chai = require('chai');
-  var expect = chai.expect;
   var sinon = require('sinon');
   chai.use(require('sinon-chai'));
 
   var unpromisify = require('..');
+}
+
+describe('unpromisify', function () {
+  var expect = chai.expect;
 
   var clock, done, promise, oldScheduler;
 
@@ -100,7 +103,7 @@ describe('unpromisify', function () {
     expect(done).to.have.been.calledOnce.and.calledWith(null, 'resultA');
   });
 
-  it('promise fail argument will call failure', function () {
+  it('promise fail handler will call failure on callback', function () {
     unpromisify(function () {
       return promise;
     }, done);
@@ -141,5 +144,4 @@ describe('unpromisify', function () {
     clock.tick();
     expect(done).to.have.been.calledOnce.and.calledWith(null, 'ho');
   });
-
 });

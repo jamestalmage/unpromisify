@@ -15,16 +15,17 @@ automatically adapt callbacks whether they are node style or promise returning
 **unpromisify(userCallback, ctx, args, done);**  
 **unpromisify(userCallback, args, done);**  
 **unpromisify(userCallback, done);**  
+**unpromisify(userCallback, opts);**
 
   * `userCallback`: a user supplied callback that performs some async task.  It may call a node style callback, 
         or return a promise.
                     
-  * `done`: your callback, which will be called after user supplied async task completes.
+  * `done` or `opts.done`: your callback, which will be called after user supplied async task completes.
   
-  * `args`: *(optional)* array of arguments to call `userCallback` with. A callback handler will automatically be
+  * `args` or `opts.arg`: *(optional)* array of arguments to call `userCallback` with. A callback handler will automatically be
         appended as the last argument.
   
-  * `ctx`: call the user supplied callback with this context
+  * `ctx` or `opts.ctx`: call the user supplied callback with this context
   
 # advantages
 
