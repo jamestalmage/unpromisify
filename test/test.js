@@ -43,6 +43,31 @@ describe('unpromisify', function () {
     expect(done).to.have.been.calledOnce.and.calledWith(null, 'result');
   });
 
+  it('users can call node style callbacks / args object', function () {
+    var cb;
+    var obj = {ctx:'blah'};
+    unpromisify(function (a, b, _cb) {
+      cb = _cb;
+      expect(a).to.equal('a');
+      expect(b).to.equal('b');
+      expect(this).to.equal(obj);
+    }, {
+      ctx: obj,
+      args: ['a', 'b'],
+      done: done
+    });
+
+    expect(typeof cb).to.equal('function');
+
+    cb(null, 'result');
+
+    expect(done.called, 'should be async').to.equal(false);
+
+    clock.tick();
+
+    expect(done).to.have.been.calledOnce.and.calledWith(null, 'result');
+  });
+
   it('users can return promises / 3 args', function () {
     unpromisify(function (a, b) {
       expect(a).to.equal('a');
@@ -87,6 +112,34 @@ describe('unpromisify', function () {
     clock.tick();
 
     expect(done).to.have.been.calledOnce.and.calledWith('reason');
+  });
+
+  it('synchronously returning a value from the fetch function will resolve done with it', function() {
+    unpromisify(function () {
+      return 'hey';
+    }, done);
+
+    expect(done.called, 'should be async').to.equal(false);
+
+    clock.tick();
+    expect(done).to.have.been.calledOnce.and.calledWith(null, 'hey');
+  });
+
+  it('synchronously return behavior can be disabled with opts.syncResults', function() {
+    var cb;
+    unpromisify(function (_cb) {
+      cb = _cb;
+      return 'hey';
+    }, {done:done, syncResults:false} );
+
+    expect(done.called, 'should be async (1)').to.equal(false);
+    clock.tick();
+    expect(done.called, 'sync return behavior suppressed').to.equal(false);
+
+    cb(null, 'ho');
+    expect(done.called, 'should be async (2)').to.equal(false);
+    clock.tick();
+    expect(done).to.have.been.calledOnce.and.calledWith(null, 'ho');
   });
 
 });

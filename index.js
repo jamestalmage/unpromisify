@@ -14,10 +14,19 @@ if (process && ('function' === typeof process.nextTick)) {
 }
 
 function callCallback(userCallback, ctx, args, done) {
+  var syncResults = true;
   if (arguments.length ===  2) {
-    done = ctx;
-    args = [];
-    ctx = null;
+    var opts = ctx;
+    if ('function' === typeof ctx) {
+      done = ctx;
+      args = [];
+      ctx = null;
+    } else {
+      done = opts.done;
+      ctx = opts.ctx || null;
+      args = opts.args || [];
+      syncResults = opts.syncResults !== false;
+    }
   }
   else if (arguments.length === 3) {
     done = args;
@@ -28,7 +37,7 @@ function callCallback(userCallback, ctx, args, done) {
     assert.equal(arguments.length, 4, 'incorrect number of arguments');
     args = args ? slice.call(args) : [];
   }
-  assert.equal(typeof done, 'function', 'done');
+  assert.equal(typeof done, 'function', 'bad type for done or opts.done');
 
   var called = false;
   function handleCallback(err, result) {
@@ -46,13 +55,15 @@ function callCallback(userCallback, ctx, args, done) {
 
   var maybePromise = userCallback.apply(ctx, args);
 
-  if(maybePromise && ('function' === typeof maybePromise.then)) {
+  if (maybePromise && ('function' === typeof maybePromise.then)) {
     maybePromise.then(function(result) {
       handleCallback(null, result);
-    },handleCallback);
+    }, handleCallback);
+  } else if (syncResults && ('undefined' !== typeof maybePromise)) {
+    schedule(function() {
+      done(null, maybePromise);
+    })
   }
-
-  return maybePromise;
 }
 
 callCallback.setScheduler = function setScheduler(newScheduler) {
