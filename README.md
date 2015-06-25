@@ -12,9 +12,9 @@ automatically adapt callbacks whether they are node style or promise returning
 
 # usage
 
-**unpromisify(userCallback, ctx, args, done);**  
-**unpromisify(userCallback, args, done);**  
-**unpromisify(userCallback, done);**  
+~~**unpromisify(userCallback, ctx, args, done);**~~ 
+~~**unpromisify(userCallback, args, done);**~~ 
+~~**unpromisify(userCallback, done);**~~ 
 **unpromisify(userCallback, opts);**
 
   * `userCallback`: a user supplied callback that performs some async task.  It may call a node style callback, 
@@ -26,6 +26,10 @@ automatically adapt callbacks whether they are node style or promise returning
         appended as the last argument.
   
   * `ctx` or `opts.ctx`: call the user supplied callback with this context
+  
+  * `opts.syncResults`: by default, if `userCallback` returns a non-promise, it is assumed that the return
+         value is the intended result. This is similar to `Promise.resolve(value)` or `Q.when(value)`.
+         To disable this feature, set `opts.syncResults` to `false`; non-promise return values will be ignored.
   
 # advantages
 
