@@ -8,6 +8,7 @@ if ('function' === typeof require) {
 
 describe('unpromisify', function () {
   var expect = chai.expect;
+  var match = sinon.match;
 
   var clock, done, promise, oldScheduler;
 
@@ -144,4 +145,37 @@ describe('unpromisify', function () {
     clock.tick();
     expect(done).to.have.been.calledOnce.and.calledWith(null, 'ho');
   });
+
+  it('throws if supplied incorrect arguments', function() {
+    expect(function(){
+      unpromisify(done);
+    }).to.throw();
+
+    expect(function(){
+      unpromisify(done, 2);
+    }).to.throw();
+
+    expect(function(){
+      unpromisify(done, {}, [], done, 'one too many');
+    }).to.throw();
+
+    expect(function(){
+      unpromisify.setScheduler({});
+    }).to.throw();
+  });
+
+  it('null args', function() {
+    var spy1 = sinon.spy(function s1(){});
+    var spy2 = sinon.spy(function s2(){});
+    var spy3 = sinon.spy(function s3(){});
+
+    unpromisify(spy1, {done:done, args:null});
+    unpromisify(spy2, null, null, done );
+    unpromisify(spy3, null, done );
+
+    expect(spy1).to.have.been.calledWith(match.func);
+    expect(spy2).to.have.been.calledWith(match.func);
+    expect(spy3).to.have.been.calledWith(match.func);
+  });
+
 });

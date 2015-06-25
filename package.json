@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test-node && npm run test-browser && npm run combine",
-    "test-node": "istanbul cover --report json --print none ./node_modules/mocha/bin/_mocha",
+    "test-node": "istanbul cover --report json --print none --dir coverage/node ./node_modules/mocha/bin/_mocha",
     "test-browser": "./node_modules/karma/bin/karma start",
     "combine": "./node_modules/.bin/istanbul-combine 'coverage/**/coverage-final.json'",
     "watch": "./node_modules/mocha/bin/mocha -w"
