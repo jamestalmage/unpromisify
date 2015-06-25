@@ -1,6 +1,6 @@
 {
   "name": "unpromisify",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "automatically adapt callbacks whether they are node style or promise returning",
   "main": "index.js",
   "scripts": {
