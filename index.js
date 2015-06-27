@@ -1,14 +1,14 @@
 (function () {
   var slice = Array.prototype.slice;
 
-  var schedule = setTimeout;
+  var schedule = _setTimeout;
 
   if (typeof setImmediate === 'function') {
-    schedule = setImmediate;
+    schedule = _setImmediate;
   }
 
   if (('undefined' !== typeof process) && process && ('function' === typeof process.nextTick)) {
-    schedule = process.nextTick;
+    schedule = _nextTick;
   }
 
   function callCallback(userCallback, ctx, args, done) {
@@ -77,6 +77,19 @@
     schedule = newScheduler;
     return oldScheduler;
   };
+
+  function _setTimeout(fn) {
+    return setTimeout(fn);
+  }
+
+  /* istanbul ignore next */
+  function _setImmediate(fn) {
+    return setImmediate(fn);
+  }
+
+  function _nextTick(fn) {
+    return process.nextTick(fn);
+  }
 
   /* istanbul ignore next */
   if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

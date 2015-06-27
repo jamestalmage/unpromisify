@@ -10,7 +10,7 @@ describe('unpromisify', function () {
   var expect = chai.expect;
   var match = sinon.match;
 
-  var clock, done, promise, oldScheduler;
+  var clock, done, promise, nextTick;
 
   beforeEach(function() {
     done = sinon.spy();
@@ -18,12 +18,17 @@ describe('unpromisify', function () {
       then: sinon.spy()
     };
     clock = sinon.useFakeTimers();
-    oldScheduler = unpromisify.setScheduler(setTimeout);
+    if('undefined' !== typeof process) {
+      nextTick = process.nextTick;
+      process.nextTick = setTimeout;
+    }
   });
 
   afterEach(function() {
     clock.restore();
-    unpromisify.setScheduler(oldScheduler);
+    if(nextTick) {
+      process.nextTick = nextTick;
+    }
   });
 
   it('users can call node style callbacks / 4 args', function () {
@@ -162,6 +167,13 @@ describe('unpromisify', function () {
     expect(function(){
       unpromisify.setScheduler({});
     }).to.throw();
+  });
+
+  it('setScheduler returns the current scheduler', function() {
+    function scheduler(){}
+
+    var oldScheduler = unpromisify.setScheduler(scheduler);
+    expect(unpromisify.setScheduler(oldScheduler)).to.equal(scheduler);
   });
 
   it('null args', function() {
